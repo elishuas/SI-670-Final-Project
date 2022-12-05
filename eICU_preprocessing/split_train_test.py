@@ -43,10 +43,10 @@ def split_train_test(eICU_path, is_test=True, seed=9, cleanup=True):
     # delete the source files, as they won't be needed anymore
     if is_test is False and cleanup:
         print('==> Removing the unsorted data...')
-        os.remove(eICU_path + 'preprocessed_timeseries.csv')
-        os.remove(eICU_path + 'preprocessed_diagnoses.csv')
-        os.remove(eICU_path + 'preprocessed_labels.csv')
-        os.remove(eICU_path + 'preprocessed_flat.csv')
+        # os.remove(eICU_path + 'preprocessed_timeseries.csv')
+        # os.remove(eICU_path + 'preprocessed_diagnoses.csv')
+        # os.remove(eICU_path + 'preprocessed_labels.csv')
+        # os.remove(eICU_path + 'preprocessed_flat.csv')
 
     for partition_name, partition in zip(['train', 'val', 'test'], [train, val, test]):
         print('==> Preparing {} data...'.format(partition_name))

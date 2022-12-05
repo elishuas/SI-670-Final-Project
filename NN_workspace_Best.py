@@ -18,14 +18,6 @@ from sklearn.model_selection import train_test_split
 
 import Utils as U
 
-# def create_dataset(dataset, look_back=5):
-#     dataX, dataY = [], []
-#     for i in range(len(dataset)-look_back-1):
-#         a = dataset[i:(i+look_back), 0]
-#     dataX.append(a)
-#     dataY.append(dataset[i + look_back, 0])
-#     return np.array(dataX), np.array(dataY)
-
 #params = {'legend.fontsize': 'x-large',
 #         'axes.labelsize': 'x-large',
 #         'axes.titlesize':'x-large',
@@ -50,8 +42,6 @@ X = data.drop(columns = ['died', 'patientunitstayid']).to_numpy().astype('float3
 # train = pd.read_csv('train.csv')
 # test = pd.read_csv('test.csv')
 
-# test = create_dataset(X, y)
-
 X_train, X_test, y_train, y_test = train_test_split(X, y, 
                                                     test_size=0.20, 
                                                     # stratify=X[['hospitalregion',
@@ -74,24 +64,16 @@ y_test_cat = to_categorical(y_test)
 # - 
 
 # +
-X_tr_ts = X_train_scaled.reshape((X_train_scaled.shape[0], 1, X_train_scaled.shape[1]))
-X_tst_ts = X_test_scaled.reshape((X_test_scaled.shape[0], 1, X_test_scaled.shape[1]))
-
-
-# -
-
-# +
 net = models.Sequential()
-net.add(layers.LSTM(1000, activation = 'tanh', input_shape = (X_tr_ts.shape[1], X_tr_ts.shape[2])))
-net.add(layers.Dense(16, activation = 'tanh'))
+net.add(layers.Dense(16, activation = 'tanh', input_shape =(None, X_train_scaled.shape[0], X_train_scaled.shape[1])))
 net.add(layers.Dense(32, activation = 'tanh'))
 net.add(layers.Dense(64, activation = 'tanh')) # Up to 82%
-
+# net.add(layers.LSTM(64, activation = 'tanh'))
 # net.add(layers.Dense(128, activation = 'tanh')) # Up to 82.5%
 # net.add(layers.Dense(256, activation = 'tanh')) # 
 # net.add(layers.Dense(512, activation = 'tanh')) # 
 # # net.add(layers.Conv1D(256, kernel_size = 2))# 
-net.add(layers.Dense(256, activationlsls = 'relu')) # 85% for flat 256, 3 tanh layers; down to 84% when increasing powers of 2
+net.add(layers.Dense(256, activation = 'relu')) # 85% for flat 256, 3 tanh layers; down to 84% when increasing powers of 2
 # # net.add(layers.Dense(32, activation = 'relu'))
 # # net.add(layers.Dense(16, activation = 'relu'))
 # net.add(layers.Dense(8, activation = 'relu'))
@@ -103,14 +85,12 @@ net.add(layers.Dense(2, activation = 'sigmoid'))
 
 # +
 net.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = [AUC(),Recall(), Precision() ])
-net.fit(X_tr_ts, y_train_cat, epochs = 1000, batch_size = 200)#, verbose = False)
+net.fit(X_train_scaled, y_train_cat, epochs = 1000, batch_size = 200)#, verbose = False)
 # -
 
 # +
-test_accuracy = net.evaluate(X_tst_ts, y_test_cat)[1]
+test_accuracy = net.evaluate(X_test_scaled, y_test_cat)[1]
 # -
-
-net.save('LSTM_model')
 
 
 print(f'Test Accuracy: {test_accuracy}')

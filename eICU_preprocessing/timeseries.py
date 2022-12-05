@@ -123,9 +123,11 @@ def gen_timeseries_file(eICU_path, test=False):
                                                  test=test)
 
     print('==> Combining data together...')
-    merged = timeseries_lab.append(timeseries_resp, sort=False)
-    merged = merged.append(timeseries_periodic, sort=False)
-    merged = merged.append(timeseries_aperiodic, sort=True)
+
+    merged = pd.concat((timeseries_lab, timeseries_resp, timeseries_periodic, timeseries_aperiodic))
+    # merged = timeseries_lab.append(timeseries_resp, sort=False)
+    # merged = merged.append(timeseries_periodic, sort=False)
+    # merged = merged.append(timeseries_aperiodic, sort=True)
 
     print('==> Normalising...')
     # all if not all are not normally distributed
