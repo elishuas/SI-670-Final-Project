@@ -6,6 +6,7 @@ from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import fbeta_score
+from sklearn.calibration import calibration_curve
 import matplotlib.pyplot as plt
 import warnings
 
@@ -83,6 +84,9 @@ def load_pkl(path):
     with open(path, 'rb') as f:
         data = pickle.load(f)
     return data
+
+def load_paths():
+    return load_json("paths.json")   
 
 
 def record_results(path_results, hparams, log_dict):
@@ -244,3 +248,25 @@ def plot_calibration_curve(labels, pred_prob, plot_model_label):
     plt.xlabel('Average predicted probability in each bin')
     plt.ylabel('Fraction of deceased patients')
     plt.show()
+
+def save_metrics(results, auprc, model_name, suffix = "Latest", save = False):
+    df_list = []
+
+    paths = load_paths()
+
+    for i, r in enumerate(results):
+        results[r]['data'] = r
+        results[r]['auprc'] = round(auprc[i], 3)
+        results[r].set_index('data', inplace = True)
+        df_list.append(results[r])
+
+    output = pd.concat(df_list)
+    output['model'] = model_name
+    
+    if save:
+        output.to_csv(paths['log_path'] + model_name + suffix + '.csv')
+
+    return output
+
+def to_timeseries(X):
+    return X.reshape((X.shape[0], 1, X.shape[1]))
