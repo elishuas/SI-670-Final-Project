@@ -2,7 +2,7 @@
 # # Neural Net Training Workspace
 # *Work produced by Stephen Toner, Fall 2022*
 
-import torch
+import sys
 import numpy as np
 import random
 from sklearn.preprocessing import StandardScaler
@@ -13,34 +13,29 @@ from tensorflow.keras.utils import to_categorical
 import pandas as pd
 from tensorflow.keras.metrics import AUC, Recall, Precision 
 from sklearn.model_selection import train_test_split
-
-
-
 import Utils as U
 
-#params = {'legend.fontsize': 'x-large',
-#         'axes.labelsize': 'x-large',
-#         'axes.titlesize':'x-large',
-#        'xtick.labelsize':'x-large',
-#         'ytick.labelsize':'x-large'}
-#pylab.rcParams.update(params)
-
 # +
-torch.manual_seed(0)
 np.random.seed(0)
 random.seed(0)
 # -
 
 # +
 
-data = pd.read_csv("timeseries_readyformodel.csv")
+if len(sys.argv) > 1:
+    suffix = sys.argv[1]
+else:
+    suffix = "latest"
+
+paths = U.load_paths()
+
+data_dir = paths['data_dir']
+model_dir = paths['models_path']
+
+data = pd.read_csv(data_dir + "timeseries_readyformodel.csv")
 
 y = data['died']
 X = data.drop(columns = ['died', 'patientunitstayid']).to_numpy().astype('float32')
-
-
-# train = pd.read_csv('train.csv')
-# test = pd.read_csv('test.csv')
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, 
                                                     test_size=0.20, 
@@ -93,8 +88,9 @@ test_accuracy = net.evaluate(X_test_scaled, y_test_cat)[1]
 # -
 
 
-print(f'Test Accuracy: {test_accuracy}')
-# feval_metrics = U.evaluation_metrics(net, X_train_scaled, y_train_cat, X_test_scaled, y_test_cat)
+net.save(model_dir + 'MLP_model' +  suffix)
 
-# y_pred_prob = net.predict_prob()
-# results = U.compute_metrics(y_pred_prob, y_test)
+print(f'Test Accuracy: {test_accuracy}')
+y_pred_prob = net.predict(X_test_scaled)
+
+pd.DataFrame(y_pred_prob).to_csv(paths['prediction_dir'] + "MLP" + suffix + ".csv", index = False)
