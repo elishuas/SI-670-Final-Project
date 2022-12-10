@@ -30,7 +30,7 @@ def evaluation_metrics(model, X_train, y_train, X_test, y_test):
 
     return {l:r for (l, r) in list(zip(labels, results))}
 
-def compute_metrics(y_pred_prob, y_true):
+def compute_metrics(y_pred_prob, y_true, addl_args = {}):
     
     thresholds = np.arange(0, 1.01, 0.01)
     results = pd.DataFrame(columns=['threshold', 'precision', 'recall', 
@@ -40,13 +40,13 @@ def compute_metrics(y_pred_prob, y_true):
         y_pred = np.where(y_pred_prob >= threshold, 1, 0)
           
         # Compute precision
-        precision = precision_score(y_true, y_pred)
+        precision = precision_score(y_true, y_pred, **addl_args)
         
         # Compute recall
-        recall = recall_score(y_true, y_pred)
+        recall = recall_score(y_true, y_pred, **addl_args)
         
         # Compute F-beta score
-        f_score = fbeta_score(y_true, y_pred, beta=2)
+        f_score = fbeta_score(y_true, y_pred, beta=2,  **addl_args)
         
         results = results.append({'threshold': threshold,
                                   'precision': precision,
@@ -102,7 +102,7 @@ def record_results(path_results, hparams, log_dict):
     print('Written results at ', path_results)
 
 # Create function to compute optimal F-beta score using threshold tuning
-def compute_metrics(y_pred_prob, y_true):
+def compute_metrics(y_pred_prob, y_true, addl_args = {}):
     
     thresholds = np.arange(0, 1.01, 0.01)
     results = pd.DataFrame(columns=['threshold', 'precision', 'recall', 
@@ -110,15 +110,15 @@ def compute_metrics(y_pred_prob, y_true):
     
     for threshold in thresholds:
         y_pred = np.where(y_pred_prob >= threshold, 1, 0)
-          
+        
         # Compute precision
-        precision = precision_score(y_true, y_pred)
+        precision = precision_score(y_true, y_pred, **addl_args)
         
         # Compute recall
-        recall = recall_score(y_true, y_pred)
+        recall = recall_score(y_true, y_pred, **addl_args)
         
         # Compute F-beta score
-        f_score = fbeta_score(y_true, y_pred, beta=2)
+        f_score = fbeta_score(y_true, y_pred, beta=2,  **addl_args)
         
         results = results.append({'threshold': threshold,
                                   'precision': precision,

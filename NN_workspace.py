@@ -59,8 +59,11 @@ X_test_scaled = scaler.transform(X_test)
 # X_train_scaled = X_train
 # X_test_scaled = X_test
 
-y_train_cat = to_categorical(y_train)
-y_test_cat = to_categorical(y_test)
+# y_train_cat = to_categorical(y_train)
+# y_test_cat = to_categorical(y_test)
+
+y_train_cat = y_train
+y_test_cat = y_test
 # - 
 
 # +
@@ -81,7 +84,7 @@ net.add(layers.Dense(64, activation = 'tanh')) # Up to 82%
 # net.add(layers.Dense(256, activation = 'tanh')) # 
 # net.add(layers.Dense(512, activation = 'tanh')) # 
 # # net.add(layers.Conv1D(256, kernel_size = 2))# 
-net.add(layers.Dense(256, activationlsls = 'relu')) # 85% for flat 256, 3 tanh layers; down to 84% when increasing powers of 2
+net.add(layers.Dense(256, activation = 'relu')) # 85% for flat 256, 3 tanh layers; down to 84% when increasing powers of 2
 # # net.add(layers.Dense(32, activation = 'relu'))
 # # net.add(layers.Dense(16, activation = 'relu'))
 # net.add(layers.Dense(8, activation = 'relu'))
@@ -93,7 +96,7 @@ net.add(layers.Dense(2, activation = 'sigmoid'))
 
 # +
 net.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = [AUC(),Recall(), Precision() ])
-net.fit(X_tr_ts, y_train_cat, epochs = 1000, batch_size = 200)#, verbose = False)
+net.fit(X_tr_ts, y_train_cat, epochs = 100, batch_size = 200)#, verbose = False)
 # -
 
 # +
