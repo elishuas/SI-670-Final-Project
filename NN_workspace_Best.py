@@ -32,16 +32,23 @@ paths = U.load_paths()
 data_dir = paths['data_dir']
 model_dir = paths['models_path']
 
-data = pd.read_csv(data_dir + "timeseries_readyformodel.csv")
+train = pd.read_csv(data_dir + "train.csv")
+test = pd.read_csv(data_dir + "train.csv")
+data = pd.concat([train, test])
 
-y = data['died']
-X = data.drop(columns = ['died', 'patientunitstayid']).to_numpy().astype('float32')
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, 
-                                                    test_size=0.20, 
-                                                    # stratify=X[['hospitalregion',
-                                                    #             'teachingstatus']],
-                                                    random_state=607)
+y_train = train['died']
+X_train = train.drop(columns = ['died']).to_numpy().astype('float32')
+
+
+y_test = test['died']
+X_test = test.drop(columns = ['died']).to_numpy().astype('float32')
+
+# X_train, X_test, y_train, y_test = train_test_split(X, y, 
+#                                                     test_size=0.20, 
+#                                                     # stratify=X[['hospitalregion',
+#                                                     #             'teachingstatus']],
+#                                                     random_state=607)
 
 # -
 
@@ -54,8 +61,8 @@ X_test_scaled = scaler.transform(X_test)
 # X_train_scaled = X_train
 # X_test_scaled = X_test
 
-y_train_cat = to_categorical(y_train)
-y_test_cat = to_categorical(y_test)
+# y_train_cat = to_categorical(y_train)
+# y_test_cat = to_categorical(y_test)
 # - 
 
 # +
@@ -64,9 +71,9 @@ net.add(layers.Dense(16, activation = 'tanh', input_shape =(None, X_train_scaled
 net.add(layers.Dense(32, activation = 'tanh'))
 net.add(layers.Dense(64, activation = 'tanh')) # Up to 82%
 # net.add(layers.LSTM(64, activation = 'tanh'))
-# net.add(layers.Dense(128, activation = 'tanh')) # Up to 82.5%
-# net.add(layers.Dense(256, activation = 'tanh')) # 
-# net.add(layers.Dense(512, activation = 'tanh')) # 
+net.add(layers.Dense(128, activation = 'tanh')) # Up to 82.5%
+net.add(layers.Dense(256, activation = 'tanh')) # 
+net.add(layers.Dense(512, activation = 'tanh')) # 
 # # net.add(layers.Conv1D(256, kernel_size = 2))# 
 net.add(layers.Dense(256, activation = 'relu')) # 85% for flat 256, 3 tanh layers; down to 84% when increasing powers of 2
 # # net.add(layers.Dense(32, activation = 'relu'))
@@ -74,17 +81,17 @@ net.add(layers.Dense(256, activation = 'relu')) # 85% for flat 256, 3 tanh layer
 # net.add(layers.Dense(8, activation = 'relu'))
 
 # Output Layer
-net.add(layers.Dense(2, activation = 'sigmoid'))
+net.add(layers.Dense(1, activation = 'sigmoid'))
 
 # -
 
 # +
 net.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = [AUC(),Recall(), Precision() ])
-net.fit(X_train_scaled, y_train_cat, epochs = 1000, batch_size = 200)#, verbose = False)
+net.fit(X_train_scaled, y_train, epochs = 1000, batch_size = 200)#, verbose = False)
 # -
 
 # +
-test_accuracy = net.evaluate(X_test_scaled, y_test_cat)[1]
+test_accuracy = net.evaluate(X_test_scaled, y_test)[1]
 # -
 
 
@@ -93,4 +100,4 @@ net.save(model_dir + 'MLP_model' +  suffix)
 print(f'Test Accuracy: {test_accuracy}')
 y_pred_prob = net.predict(X_test_scaled)
 
-pd.DataFrame(y_pred_prob).to_csv(paths['prediction_dir'] + "MLP" + suffix + ".csv", index = False)
+pd.DataFrame(y_pred_prob).to_csv("MLP" + suffix + ".csv", index = False)

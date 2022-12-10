@@ -1,4 +1,4 @@
-import torch
+import sys
 import numpy as np
 import random
 from sklearn.preprocessing import StandardScaler
@@ -13,33 +13,71 @@ import pandas as pd
 
 from sklearn.model_selection import train_test_split
 
+
+if len(sys.argv) > 1:
+    suffix = sys.argv[1]
+else:
+    suffix = "latest"
+
+paths = U.load_paths()
+
 data_dir = paths['data_dir']
-data = pd.read_csv(data_dir + "timeseries_readyformodel.csv")
+model_dir = paths['models_path']
 
-y = data['died']
-X = data.drop(columns = ['died', 'patientunitstayid']).to_numpy().astype('float32')
+train = pd.read_csv(data_dir + "train.csv")
+test = pd.read_csv(data_dir + "train.csv")
+data = pd.concat([train, test])
+scaler = StandardScaler()
+# scaler = MinMaxScaler()
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, 
-                                                    test_size=0.20, 
-                                                    random_state=607)
+
+y_train = train['died']
+X_train = train.drop(columns = ['died']).to_numpy().astype('float32')
 
 
-X_train_scaled = X_train
-X_test_scaled = X_test
+y_test = test['died']
+X_test = test.drop(columns = ['died']).to_numpy().astype('float32')
 
-y_train_cat = to_categorical(y_train)
-y_test_cat = to_categorical(y_test)
 
-X_tst_ts = X_test_scaled.reshape((X.shape[0], 1, X_test_scaled.shape[1]))
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
 
-model_name = "LSTM_model/"
 
-model = load_model(model_name)
+model = load_model(paths['models_path'] + "MLP_modelbest_long")
 
 model.summary()
 
 for layer in model.layers:
     print(layer.input_shape)
-results = model.evaluate(X_tst_ts, y_test_cat)
+results = model.evaluate(X_test_scaled, y_test)
 
 print(results)
+
+
+train_pred_probs = model.predict(X_train_scaled)
+test_pred_probs = model.predict(X_test_scaled)
+
+train_results = U.compute_metrics(train_pred_probs, y_train)
+test_results = U.compute_metrics(test_pred_probs, y_test)
+
+train_precision, train_recall, _ = (
+    U.precision_recall_curve(y_train, 
+                           model.predict(X_train_scaled))
+)
+test_precision, test_recall, _ = (
+    U.precision_recall_curve(y_test, 
+                           model.predict(X_test_scaled))
+)
+
+train_auprc = U.auc(train_recall, train_precision)
+test_auprc = U.auc(test_recall, test_precision)
+
+print(train_results)
+print(test_results)
+print(train_auprc)
+print(test_auprc)
+
+U.save_metrics({"train": train_results, "test": test_results},
+                [train_auprc, test_auprc],
+                model_name ="MLP",
+                save = True)
