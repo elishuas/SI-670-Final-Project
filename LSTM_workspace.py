@@ -55,8 +55,10 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
-y_train_cat = to_categorical(y_train)
-y_test_cat = to_categorical(y_test)
+# y_train_cat = to_categorical(y_train)
+# y_test_cat = to_categorical(y_test)
+y_train_cat = y_train
+y_test_cat = y_test
 # - 
 
 # +
@@ -70,10 +72,10 @@ net.add(layers.LSTM(1000, activation = 'tanh', input_shape = (X_tr_ts.shape[1], 
 net.add(layers.Dense(16, activation = 'tanh'))
 net.add(layers.Dense(32, activation = 'tanh'))
 net.add(layers.Dense(64, activation = 'tanh')) # Up to 82%
-net.add(layers.Dense(256, activationlsls = 'tanh'))
+net.add(layers.Dense(256, activation = 'tanh'))
 
 # Output Layer
-net.add(layers.Dense(2, activation = 'sigmoid'))
+net.add(layers.Dense(1, activation = 'sigmoid'))
 # -
 
 # +
