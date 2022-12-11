@@ -80,7 +80,7 @@ X_tst_ts = X_test_scaled
 
 # +
 net = models.Sequential()
-net.add(layers.LSTM(1000, activation = 'tanh', input_shape = X_tr_ts.shape))
+net.add(layers.LSTM(1000, activation = 'tanh', input_shape = (X_tr_ts.shape[0], 1,  X_tr_ts.shape[1])))
 net.add(layers.Dense(16, activation = 'tanh'))
 net.add(layers.Dense(32, activation = 'tanh'))
 net.add(layers.Dense(64, activation = 'tanh')) # Up to 82%
@@ -108,7 +108,7 @@ net.fit(X_tr_ts, y_train, epochs = 10, batch_size = 200)#, verbose = False)
 test_accuracy = net.evaluate(X_tst_ts, y_test)[1]
 # -
 
-net.save('LSTM_model')
+net.save('LSTM_model_12_11')
 
 
 print(f'Test Accuracy: {test_accuracy}')
