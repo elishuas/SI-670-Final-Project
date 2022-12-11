@@ -32,20 +32,30 @@ paths = U.load_paths()
 data_dir = paths['data_dir']
 model_dir = paths['models_path']
 
-data = pd.read_csv(data_dir + "timeseries_readyformodel.csv")
 
-y = data['died']
-X = data.drop(columns = ['died', 'patientunitstayid']).to_numpy().astype('float32')
+train = pd.read_csv(data_dir + 'train_ts.csv')
+test = pd.read_csv(data_dir + 'test_ts.csv')
+
+X_train = train.drop(columns = "died")
+y_train = train['died']
+X_test = test.drop(columns = "died")
+y_test = test['died']
 
 
-# train = pd.read_csv('train.csv')
-# test = pd.read_csv('test.csv')
+# data = pd.read_csv(data_dir + "timeseries_readyformodel.csv")
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, 
-                                                    test_size=0.20, 
-                                                    # stratify=X[['hospitalregion',
-                                                    #             'teachingstatus']],
-                                                    random_state=607)
+# y = data['died']
+# X = data.drop(columns = ['died', 'patientunitstayid']).to_numpy().astype('float32')
+
+
+# # train = pd.read_csv('train.csv')
+# # test = pd.read_csv('test.csv')
+
+# X_train, X_test, y_train, y_test = train_test_split(X, y, 
+#                                                     test_size=0.20, 
+#                                                     # stratify=X[['hospitalregion',
+#                                                     #             'teachingstatus']],
+#                                                     random_state=607)
 
 # -
 
@@ -69,10 +79,10 @@ X_tst_ts = U.to_timeseries(X_test_scaled)
 # +
 net = models.Sequential()
 net.add(layers.LSTM(1000, activation = 'tanh', input_shape = (X_tr_ts.shape[1], X_tr_ts.shape[2])))
-net.add(layers.Dense(16, activation = 'tanh'))
-net.add(layers.Dense(32, activation = 'tanh'))
-net.add(layers.Dense(64, activation = 'tanh')) # Up to 82%
-net.add(layers.Dense(256, activation = 'tanh'))
+net.add(layers.Dense(64, activation = 'tanh'))
+net.add(layers.Dense(128, activation = 'tanh'))
+net.add(layers.Dense(256, activation = 'tanh')) # Up to 82%
+net.add(layers.Dense(64, activation = 'tanh'))
 
 # Output Layer
 net.add(layers.Dense(1, activation = 'sigmoid'))
