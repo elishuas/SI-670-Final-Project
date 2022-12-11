@@ -33,15 +33,15 @@ data_dir = paths['data_dir']
 model_dir = paths['models_path']
 
 train = pd.read_csv(data_dir + "train.csv")
-test = pd.read_csv(data_dir + "train.csv")
+test = pd.read_csv(data_dir + "test.csv")
 data = pd.concat([train, test])
 
 
-y_train = train['died']
+y_train = np.asarray(train['died']).astype('float32').reshape((-1,1))
 X_train = train.drop(columns = ['died']).to_numpy().astype('float32')
 
 
-y_test = test['died']
+y_test = np.asarray(test['died']).astype('float32').reshape((-1,1))
 X_test = test.drop(columns = ['died']).to_numpy().astype('float32')
 
 # X_train, X_test, y_train, y_test = train_test_split(X, y, 
@@ -81,7 +81,7 @@ net.add(layers.Dense(256, activation = 'relu')) # 85% for flat 256, 3 tanh layer
 # net.add(layers.Dense(8, activation = 'relu'))
 
 # Output Layer
-net.add(layers.Dense(1, activation = 'sigmoid'))
+net.add(layers.Dense(2, activation = 'sigmoid'))
 
 # -
 

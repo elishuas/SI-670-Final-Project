@@ -31,11 +31,11 @@ scaler = StandardScaler()
 # scaler = MinMaxScaler()
 
 
-y_train = train['died']
+y_train = np.asarray(train['died']).astype('float32').reshape((-1,1))
 X_train = train.drop(columns = ['died']).to_numpy().astype('float32')
 
 
-y_test = test['died']
+y_test = np.asarray(test['died']).astype('float32').reshape((-1,1))
 X_test = test.drop(columns = ['died']).to_numpy().astype('float32')
 
 
