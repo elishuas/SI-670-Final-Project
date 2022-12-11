@@ -119,7 +119,7 @@ net.fit(X_tr_ts, y_train, epochs = 1000, batch_size = 200)#, verbose = False)
 test_accuracy = net.evaluate(X_tst_ts, y_test)[1]
 # -
 
-net.save('LSTM_model_local')
+net.save('LSTM_model_12_11')
 
 
 # print(f'Test Accuracy: {test_accuracy}')
