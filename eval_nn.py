@@ -25,7 +25,7 @@ data_dir = paths['data_dir']
 model_dir = paths['models_path']
 
 train = pd.read_csv(data_dir + "train.csv")
-test = pd.read_csv(data_dir + "train.csv")
+test = pd.read_csv(data_dir + "test.csv")
 data = pd.concat([train, test])
 scaler = StandardScaler()
 # scaler = MinMaxScaler()
