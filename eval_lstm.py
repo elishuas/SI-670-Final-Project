@@ -66,6 +66,9 @@ for layer in model.layers:
 train_pred_probs = model.predict(X_tr_ts)
 test_pred_probs = model.predict(X_tst_ts)
 
+pd.DataFrame(test_pred_probs).to_csv("LSTM_test_pred_probs" + suffix + ".csv", index = False)
+pd.DataFrame(train_pred_probs).to_csv("LSTM_train_pred_probs" + suffix + ".csv", index = False)
+
 train_results = U.compute_metrics(train_pred_probs, y_train)
 test_results = U.compute_metrics(test_pred_probs, y_test)
 
@@ -88,5 +91,5 @@ print(test_auprc)
 
 U.save_metrics({"train": train_results, "test": test_results},
                 [train_auprc, test_auprc],
-                model_name ="LSTM_Tiny",
+                model_name ="LSTM_Tiny_calibration",
                 save = True)
