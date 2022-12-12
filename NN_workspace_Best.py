@@ -32,8 +32,8 @@ paths = U.load_paths()
 data_dir = paths['data_dir']
 model_dir = paths['models_path']
 
-train = pd.read_csv(data_dir + 'train_ts.csv')
-test = pd.read_csv(data_dir + 'test_ts.csv')
+train = pd.read_csv(data_dir + 'train_new.csv')
+test = pd.read_csv(data_dir + 'test_new.csv')
 data = pd.concat([train, test])
 
 
@@ -67,18 +67,19 @@ X_test_scaled = scaler.transform(X_test)
 
 # +
 net = models.Sequential()
-net.add(layers.Dense(16, activation = 'relu', input_shape =(X_train_scaled.shape[0], X_train_scaled.shape[1])))
-net.add(layers.Dense(32, activation = 'relu'))
-net.add(layers.Dense(64, activation = 'relu')) # Up to 82%
+net.add(layers.Dense(128, activation = 'tanh', input_shape =(None, X_train_scaled.shape[0], X_train_scaled.shape[1])))
+net.add(layers.Dense(32, activation = 'tanh'))
+net.add(layers.Dropout(0.2))
+net.add(layers.Dense(64, activation = 'tanh')) # Up to 82%
 # net.add(layers.LSTM(64, activation = 'tanh'))
-net.add(layers.Dense(128, activation = 'relu')) # Up to 82.5%
-net.add(layers.Dense(256, activation = 'relu')) # 
-net.add(layers.Dense(512, activation = 'relu')) # 
-# # net.add(layers.Conv1D(256, kernel_size = 2))# 
-net.add(layers.Dense(256, activation = 'relu')) # 85% for flat 256, 3 tanh layers; down to 84% when increasing powers of 2
-net.add(layers.Dense(32, activation = 'relu'))
-net.add(layers.Dense(16, activation = 'relu'))
-net.add(layers.Dense(8, activation = 'relu'))
+# net.add(layers.Dense(128, activation = 'relu')) # Up to 82.5%
+# net.add(layers.Dense(256, activation = 'relu')) # 
+# net.add(layers.Dense(512, activation = 'relu')) # 
+# # # net.add(layers.Conv1D(256, kernel_size = 2))# 
+net.add(layers.Dropout(0.2))
+net.add(layers.Dense(16, activation = 'tanh')) # Up to 82%
+# net.add(layers.Dense(16, activation = 'relu'))
+# net.add(layers.Dense(8, activation = 'relu'))
 
 # Output Layer
 net.add(layers.Dense(1, activation = 'sigmoid'))
@@ -87,11 +88,11 @@ net.add(layers.Dense(1, activation = 'sigmoid'))
 
 # +
 net.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = [AUC(),Recall(), Precision() ])
-net.fit(X_train_scaled, y_train, epochs = 1000, batch_size = 200)#, verbose = False)
+net.fit(X_train_scaled, y_train, epochs = 100, batch_size = 200)#, verbose = False)
 # -
 
 # +
-test_accuracy = net.evaluate(X_test_scaled, y_test)[1]
+test_accuracy = net.evaluate(X_test_scaled, y_test)
 # -
 
 

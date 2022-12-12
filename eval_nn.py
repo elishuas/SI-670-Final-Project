@@ -17,15 +17,15 @@ from sklearn.model_selection import train_test_split
 if len(sys.argv) > 1:
     suffix = sys.argv[1]
 else:
-    suffix = "latest"
+    suffix = ""
 
 paths = U.load_paths()
 
 data_dir = paths['data_dir']
 model_dir = paths['models_path']
 
-train = pd.read_csv(data_dir + "train.csv")
-test = pd.read_csv(data_dir + "test.csv")
+train = pd.read_csv(data_dir + "train_new.csv")
+test = pd.read_csv(data_dir + "test_new.csv")
 data = pd.concat([train, test])
 scaler = StandardScaler()
 # scaler = MinMaxScaler()
@@ -43,7 +43,7 @@ X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
 
-model = load_model(paths['models_path'] + "MLP_modelbest_long")
+model = load_model(paths['models_path'] + "MLP_model" + suffix)
 
 model.summary()
 
@@ -56,6 +56,8 @@ print(results)
 
 train_pred_probs = model.predict(X_train_scaled)
 test_pred_probs = model.predict(X_test_scaled)
+
+pd.DataFrame(test_pred_probs).to_csv("MLP_Predicted" + suffix + ".csv")
 
 train_results = U.compute_metrics(train_pred_probs, y_train)
 test_results = U.compute_metrics(test_pred_probs, y_test)
@@ -79,5 +81,5 @@ print(test_auprc)
 
 U.save_metrics({"train": train_results, "test": test_results},
                 [train_auprc, test_auprc],
-                model_name ="MLP",
+                model_name ="MLP" + suffix,
                 save = True)
