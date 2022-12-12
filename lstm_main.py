@@ -91,16 +91,16 @@ X_tst_ts =  U.to_timeseries(X_test_scaled)
 
 # +
 net = models.Sequential()
-net.add(layers.LSTM(1000, activation = 'tanh', input_shape = (X_tr_ts.shape[1], X_tr_ts.shape[2])))
-net.add(layers.Dense(16, activation = 'tanh'))
-net.add(layers.Dense(32, activation = 'tanh'))
-net.add(layers.Dense(64, activation = 'tanh')) # Up to 82%
+net.add(layers.LSTM(1, activation = 'tanh', input_shape = (X_tr_ts.shape[1], X_tr_ts.shape[2])))
+# net.add(layers.Dense(16, activation = 'tanh'))
+# net.add(layers.Dense(32, activation = 'tanh'))
+# net.add(layers.Dense(64, activation = 'tanh')) # Up to 82%
 
-# net.add(layers.Dense(128, activation = 'tanh')) # Up to 82.5%
-# net.add(layers.Dense(256, activation = 'tanh')) # 
-# net.add(layers.Dense(512, activation = 'tanh')) # 
-# # net.add(layers.Conv1D(256, kernel_size = 2))# 
-net.add(layers.Dense(256, activation = 'relu')) # 85% for flat 256, 3 tanh layers; down to 84% when increasing powers of 2
+# # net.add(layers.Dense(128, activation = 'tanh')) # Up to 82.5%
+# # net.add(layers.Dense(256, activation = 'tanh')) # 
+# # net.add(layers.Dense(512, activation = 'tanh')) # 
+# # # net.add(layers.Conv1D(256, kernel_size = 2))# 
+# net.add(layers.Dense(256, activation = 'relu')) # 85% for flat 256, 3 tanh layers; down to 84% when increasing powers of 2
 # # net.add(layers.Dense(32, activation = 'relu'))
 # # net.add(layers.Dense(16, activation = 'relu'))
 # net.add(layers.Dense(8, activation = 'relu'))
@@ -112,7 +112,7 @@ net.add(layers.Dense(1, activation = 'sigmoid'))
 
 # +
 net.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = [AUC(),Recall(), Precision() ])
-net.fit(X_tr_ts, y_train, epochs = 1000, batch_size = 200)#, verbose = False)
+net.fit(X_tr_ts, y_train)#, verbose = False)
 # -
 
 # +
