@@ -81,7 +81,7 @@ net = models.Sequential()
 net.add(layers.LSTM(1000, activation = 'tanh', input_shape = (X_tr_ts.shape[1], X_tr_ts.shape[2])))
 net.add(layers.Dense(64, activation = 'tanh'))
 net.add(layers.Dense(128, activation = 'tanh'))
-net.add(layers.Dense(256, activation = 'tanh')) # Up to 82%
+net.add(layers.Dropout(0.2))
 net.add(layers.Dense(64, activation = 'tanh'))
 
 # Output Layer
@@ -90,7 +90,7 @@ net.add(layers.Dense(1, activation = 'sigmoid'))
 
 # +
 net.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = [AUC(),Recall(), Precision()])
-net.fit(X_tr_ts, y_train_cat, epochs = 1000, batch_size = 200)#, verbose = False)
+net.fit(X_tr_ts, y_train_cat, epochs = 500, batch_size = 200)#, verbose = False)
 # -
 
 # +
