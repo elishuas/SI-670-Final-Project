@@ -1,0 +1,7 @@
+{
+    "models_path": "./trained_models/",
+    "log_path": "./logs/",
+    "data_dir": "./data/",
+    "graph_dir": "./graphs/",
+    "prediction_dir": "./predictions/"
+}
